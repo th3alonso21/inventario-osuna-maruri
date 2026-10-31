@@ -79,6 +79,15 @@ main{max-width:1120px;margin:0 auto;padding:22px 20px 110px}
 .page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .page-h h1{margin:0;font-size:28px;font-weight:800;font-variation-settings:'wdth' 120;letter-spacing:-.01em;line-height:1.1}
 .page-h p{margin:4px 0 0;color:var(--muted)}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:560px){.head-actions{width:100%}.head-actions .btn{flex:1;padding:11px 10px}}
+.out-list{max-height:52vh;overflow-y:auto;margin:0 -18px;border-top:1px solid var(--line)}
+.out-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid #EDF0F2;cursor:pointer;background:#fff;width:100%;border-left:0;border-right:0;border-top:0;text-align:left}
+.out-row:hover{background:#FAFBFC}
+.out-row.zero{opacity:.5}
+.out-pick{display:flex;gap:12px;align-items:center;background:var(--steel);border-radius:var(--r);padding:12px;margin-bottom:14px}
+.out-done{list-style:none;margin:12px 0 0;padding:10px 0 0;border-top:1px dashed var(--line);font-size:13.5px;color:var(--muted)}
+.out-done li{padding:3px 0}
 
 nav.bottom{display:none}
 @media (max-width:760px){
@@ -141,6 +150,19 @@ nav.bottom{display:none}
 .drawer-label::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--steel);box-shadow:inset 0 0 0 1.5px #A9B4BB}
 .drawer-sub{color:var(--muted);font-size:13.5px}
 .drawer-warn{margin-left:auto;font-size:12.5px;font-weight:700;color:#7A5A00;background:var(--tag-soft);border:1px solid #EBD487;border-radius:999px;padding:3px 10px;white-space:nowrap}
+/* El mueble: un marco oscuro con sus cajones apilados adentro */
+.cabinet{background:var(--ink);border-radius:20px;padding:6px 10px 10px;margin-bottom:22px;box-shadow:var(--shadow)}
+.cabinet-h{display:flex;align-items:baseline;gap:10px;padding:10px 8px 12px;color:#fff}
+.cabinet-h h2{margin:0;font-size:20px;font-weight:800;font-variation-settings:'wdth' 118;letter-spacing:-.01em}
+.cabinet-h span{color:#AEB9C0;font-size:13.5px}
+.cabinet .drawer{margin-bottom:8px;border-color:#33444F;border-radius:12px}
+.cabinet .drawer:last-child{margin-bottom:0}
+.cabinet .drawer-h{position:relative}
+.cabinet .drawer-h::after{content:'';position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:54px;height:5px;border-radius:5px 5px 0 0;background:#C3CCD2}
+.cat-sub{display:flex;align-items:center;gap:8px;padding:9px 16px 5px;font-size:13px;font-weight:750;color:var(--muted);border-bottom:1px solid #EDF0F2;background:#fff}
+.cat-sub .n{margin-left:2px;font-weight:600;color:#9AA5AC}
+.cat-emo{font-size:15px;line-height:1;margin-right:2px}
+@media (max-width:560px){.cabinet{padding:4px 6px 6px;border-radius:16px}.cabinet-h{padding:9px 8px 10px}}
 .item-row{display:flex;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid #EDF0F2;cursor:pointer}
 .item-row:last-child{border-bottom:0}
 .item-row:hover{background:#FAFBFC}
@@ -302,7 +324,7 @@ const firebaseConfig = {
   appId: "1:1074657411273:web:874808b689ff4cb39ccd18"
 };
 const OWNER_EMAIL = "alonso.osunamaruri@gmail.com";
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -362,6 +384,7 @@ const ICONS = {
   gear:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   bell:'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>',
   search:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  minus:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
   camera:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
 };
 const NAV = [
@@ -593,7 +616,10 @@ function renderInventory(v){
   v.innerHTML = `
     <div class="page-h">
       <div><h1>Inventario</h1><p id="inv-summary"></p></div>
-      <a class="btn primary" href="#/alta">${ICONS.plus} Dar de alta</a>
+      <div class="head-actions">
+        <button class="btn dark" id="inv-out" type="button">${ICONS.minus} Registrar salida</button>
+        <a class="btn primary" href="#/alta">${ICONS.plus} Dar de alta</a>
+      </div>
     </div>
     <div class="chips" id="furn-chips"></div>
     <div class="toolbar">
@@ -606,6 +632,7 @@ function renderInventory(v){
       </div>
     </div>
     <div id="inv-list"></div>`;
+  $('#inv-out').onclick = ()=>openOutFlow();
   $('#inv-q').addEventListener('input', e=>{ S.ui.q=e.target.value; renderInventoryList(); });
   $('#inv-cat').addEventListener('change', e=>{ S.ui.cat=e.target.value; renderInventoryList(); });
   $('#inv-low').onclick = ()=>{ S.ui.low=!S.ui.low; $('#inv-low').classList.toggle('on', S.ui.low); renderInventoryList(); };
@@ -652,31 +679,51 @@ function renderInventoryList(){
     box.innerHTML = `<div class="empty"><h3>Sin resultados</h3><p>Ningún artículo coincide con la búsqueda o los filtros. Prueba con otra palabra o quita los filtros.</p></div>`;
     return;
   }
-  // Agrupar
-  const groups = new Map();
-  for(const it of list){
-    let key, title, sub;
+  // Vista de mueble: cada mueble es un marco con sus cajones, y dentro de cada cajón
+  // las cosas van separadas por categoría (o, en "Por categoría", directo por categoría).
+  const byCatOrder = (x,y)=>catLabel(x).localeCompare(catLabel(y),'es');
+  const catBlocks = (items)=>{
+    const m = new Map();
+    items.forEach(it=>{ const k=it.categoryId||''; if(!m.has(k)) m.set(k,[]); m.get(k).push(it); });
+    return [...m.entries()].sort((x,y)=>byCatOrder(x[0],y[0]));
+  };
+  const warnChip = items=>{ const w=items.filter(needsAttention).length; return w?`<span class="drawer-warn">⚠ ${w} por reponer</span>`:''; };
+  const countTxt = n=>`${n} artículo${n===1?'':'s'}`;
+  const furnIds = [...new Set(list.map(i=>i.furnitureId))];
+  const furnOrder = sortedFurniture().map(f=>f.id);
+  furnIds.sort((x,y)=>{ const ix=furnOrder.indexOf(x), iy=furnOrder.indexOf(y); return (ix<0?999:ix)-(iy<0?999:iy); });
+  box.innerHTML = furnIds.map(fid=>{
+    const fItems = list.filter(i=>i.furnitureId===fid);
+    let inner;
     if(S.ui.groupBy==='cat'){
-      key = it.categoryId||'none'; title = `${catEmoji(it.categoryId)} ${catLabel(it.categoryId)}`; sub = '';
+      inner = catBlocks(fItems).map(([cid, items])=>`
+        <section class="drawer">
+          <div class="drawer-h">
+            <span class="drawer-label"><span class="cat-emo">${esc(catEmoji(cid))}</span>${esc(catLabel(cid))}</span>
+            <span class="drawer-sub">${countTxt(items.length)}</span>${warnChip(items)}
+          </div>
+          ${items.map(itemRowHtml).join('')}
+        </section>`).join('');
     }else{
-      key = (it.furnitureId||'')+'|'+(it.locationId||'');
-      title = locName(it.locationId);
-      sub = S.ui.furn==='all' ? furnName(it.furnitureId) : '';
+      const locOrder = locsOf(fid).map(l=>l.id);
+      const locIds = [...new Set(fItems.map(i=>i.locationId))].sort((x,y)=>{ const ix=locOrder.indexOf(x), iy=locOrder.indexOf(y); return (ix<0?999:ix)-(iy<0?999:iy); });
+      inner = locIds.map(lid=>{
+        const lItems = fItems.filter(i=>i.locationId===lid);
+        return `<section class="drawer">
+          <div class="drawer-h">
+            <span class="drawer-label">${esc(locName(lid))}</span>
+            <span class="drawer-sub">${countTxt(lItems.length)}</span>${warnChip(lItems)}
+          </div>
+          ${catBlocks(lItems).map(([cid, items])=>`
+            <div class="cat-sub"><span class="cat-emo">${esc(catEmoji(cid))}</span>${esc(catLabel(cid))}<span class="n num">${items.length}</span></div>
+            ${items.map(itemRowHtml).join('')}`).join('')}
+        </section>`;
+      }).join('');
     }
-    if(!groups.has(key)) groups.set(key, {title, sub, items:[], sortKey: groupSortKey(it)});
-    groups.get(key).items.push(it);
-  }
-  const ordered = [...groups.values()].sort((a,b)=> a.sortKey < b.sortKey ? -1 : a.sortKey > b.sortKey ? 1 : 0);
-  box.innerHTML = ordered.map(g=>{
-    const warn = g.items.filter(needsAttention).length;
-    return `<section class="drawer">
-      <div class="drawer-h">
-        <span class="drawer-label">${esc(g.title)}</span>
-        <span class="drawer-sub">${g.sub?esc(g.sub)+' · ':''}${g.items.length} artículo${g.items.length===1?'':'s'}</span>
-        ${warn?`<span class="drawer-warn">⚠ ${warn} por reponer</span>`:''}
-      </div>
-      ${g.items.map(itemRowHtml).join('')}
-    </section>`;
+    return `<div class="cabinet">
+      <div class="cabinet-h"><h2>${esc(furnName(fid))}</h2><span>${countTxt(fItems.length)}</span></div>
+      ${inner}
+    </div>`;
   }).join('');
 }
 function groupSortKey(it){
@@ -688,7 +735,7 @@ function groupSortKey(it){
   return String(fi<0?999:fi).padStart(4,'0')+'-'+String(li<0?999:li).padStart(4,'0');
 }
 function itemRowHtml(it){
-  const meta = [it.brand, it.spec, S.ui.groupBy==='cat' ? `${furnName(it.furnitureId)} › ${locName(it.locationId)}` : catLabel(it.categoryId)].filter(Boolean).join(' · ');
+  const meta = [it.brand, it.spec, S.ui.groupBy==='cat' ? locName(it.locationId) : ''].filter(Boolean).join(' · ') || (it.serial ? 'Serie '+it.serial : '');
   return `<div class="item-row" data-item="${it.id}">
     <div class="thumb">${thumbHtml(it)}</div>
     <div class="item-main">
@@ -739,12 +786,80 @@ function openQuickMove(itemId, type){
     </div>
     <div class="modal-f"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="qm-ok">${isOutType?'Registrar salida':'Registrar entrada'}</button></div>`, {sm:true, top:true});
   bindStepper(m, 'qm-qty');
-  setTimeout(()=>$('#qm-qty',m).select(),50);
+  setTimeout(()=>$('#qm-qty',m)?.select(),50);
   $('#qm-ok',m).onclick = async ()=>{
     const btn=$('#qm-ok',m); btn.disabled=true;
     try{ await recordMovement(itemId, type, $('#qm-qty',m).value, $('#qm-note',m).value.trim()); closeModal(m); toast(isOutType?'Salida registrada':'Entrada registrada'); }
     catch(e){ toast(errMsg(e), true); btn.disabled=false; }
   };
+}
+/* Registrar salida: buscar → elegir → cantidad. Se queda abierto para varias salidas seguidas. */
+function openOutFlow(){
+  const done = [];
+  let picked = null;
+  const m = openModal(`
+    <div class="modal-h"><h3>Registrar salida</h3><button class="x" data-close>×</button></div>
+    <div class="modal-b" id="out-body"></div>
+    <div class="modal-f"><button class="btn" data-close>Listo</button></div>`);
+  const body = $('#out-body', m);
+  const drawSearch = (q='')=>{
+    picked = null; currentSubmit = null;
+    body.innerHTML = `
+      <div class="search" style="margin-bottom:12px">${ICONS.search}<input class="input" id="out-q" placeholder="¿Qué sacaste? p. ej. pilas, foco, cinta" value="${esc(q)}" autocomplete="off"></div>
+      <div class="out-list" id="out-list"></div>
+      ${done.length?`<ul class="out-done">${done.map(d=>`<li>✓ Sacaste ${d.qty} ${esc(d.unit)} de <b style="color:var(--ink)">${esc(d.name)}</b></li>`).join('')}</ul>`:''}`;
+    const inp = $('#out-q', body);
+    const drawList = ()=>{
+      const nq = norm(inp.value);
+      let items = S.items.slice();
+      if(nq) items = items.filter(i=>norm([i.name,i.brand,i.spec,i.serial,catLabel(i.categoryId),locName(i.locationId)].join(' ')).includes(nq));
+      items.sort((a,b)=> (b.quantity>0)-(a.quantity>0) || a.name.localeCompare(b.name,'es'));
+      $('#out-list', body).innerHTML = items.length ? items.slice(0,60).map(it=>`
+        <button type="button" class="out-row ${Number(it.quantity)>0?'':'zero'}" data-pick="${it.id}">
+          <div class="thumb" style="width:42px;height:42px;font-size:19px;border-radius:8px">${thumbHtml(it)}</div>
+          <div class="item-main"><div class="item-name" style="font-size:15px">${esc(it.name)}${it.brand?` <span style="font-weight:500;color:var(--muted)">· ${esc(it.brand)}</span>`:''}</div>
+          <div class="item-meta">${esc(furnName(it.furnitureId))} › ${esc(locName(it.locationId))}</div></div>
+          <div class="qty"><b class="num" style="font-size:18px">${Number(it.quantity)||0}</b><span>${esc(it.unit||'pza')}</span></div>
+        </button>`).join('') : `<p style="padding:18px;color:var(--muted);margin:0">No hay nada que coincida con "${esc(inp.value)}".</p>`;
+    };
+    inp.addEventListener('input', drawList);
+    drawList();
+    setTimeout(()=>inp.focus(), 60);
+    $('#out-list', body).addEventListener('click', e=>{ const r=e.target.closest('[data-pick]'); if(r) drawPick(r.dataset.pick, inp.value); });
+  };
+  const drawPick = (id, lastQ)=>{
+    const it = S.items.find(i=>i.id===id); if(!it) return drawSearch(lastQ);
+    picked = id;
+    body.innerHTML = `
+      <div class="out-pick">
+        <div class="thumb">${thumbHtml(it)}</div>
+        <div class="item-main"><div class="item-name">${esc(it.name)}</div><div class="item-meta">${esc(furnName(it.furnitureId))} › ${esc(locName(it.locationId))} · hay <b class="num">${it.quantity}</b> ${esc(it.unit||'pza')}</div></div>
+      </div>
+      <div class="field"><label>¿Cuántos sacaste?</label>${stepperHtml('out-qty')}</div>
+      <div class="field"><label>Para qué <small>(opcional)</small></label><input class="input" id="out-note" placeholder="p. ej. control de la tele"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="out-back" type="button">← Cambiar</button>
+        <button class="btn primary" id="out-ok" type="button" style="flex:1">Registrar salida</button>
+      </div>`;
+    bindStepper(body, 'out-qty');
+    setTimeout(()=>$('#out-qty',body)?.select(), 60);
+    $('#out-back', body).onclick = ()=>drawSearch(lastQ);
+    const submit = async ()=>{
+      const btn=$('#out-ok',body); btn.disabled=true;
+      const qty = Math.floor(Number($('#out-qty',body).value)||0);
+      try{
+        await recordMovement(id, 'salida', qty, $('#out-note',body).value.trim());
+        done.unshift({name:it.name, qty, unit:it.unit||'pza'});
+        toast(`Salida registrada: ${qty} ${it.unit||'pza'} de ${it.name}`);
+        drawSearch('');
+      }catch(e){ toast(errMsg(e), true); btn.disabled=false; }
+    };
+    $('#out-ok', body).onclick = submit;
+    currentSubmit = submit;
+  };
+  let currentSubmit = null;
+  body.addEventListener('keydown', e=>{ if(e.key==='Enter' && picked && currentSubmit && e.target.matches('input')){ e.preventDefault(); currentSubmit(); } });
+  drawSearch('');
 }
 function stepperHtml(id, val=1){
   return `<div class="stepper"><button type="button" data-step="-1" aria-label="Menos">−</button><input class="input num" id="${id}" type="number" inputmode="numeric" min="1" value="${val}"><button type="button" data-step="1" aria-label="Más">+</button></div>`;
