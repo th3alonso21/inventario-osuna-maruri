@@ -80,7 +80,7 @@ main{max-width:1120px;margin:0 auto;padding:22px 20px 110px}
 .page-h h1{margin:0;font-size:28px;font-weight:800;font-variation-settings:'wdth' 120;letter-spacing:-.01em;line-height:1.1}
 .page-h p{margin:4px 0 0;color:var(--muted)}
 .head-actions{display:flex;gap:8px;flex-wrap:wrap}
-@media (max-width:560px){.head-actions{width:100%}.head-actions .btn{flex:1;padding:11px 10px}}
+@media (max-width:760px){.head-actions{width:100%}.head-actions .btn{flex:1 1 30%;padding:11px 8px;font-size:13.5px;flex-direction:column;gap:3px;white-space:normal;text-align:center;line-height:1.15}}
 .out-list{max-height:52vh;overflow-y:auto;margin:0 -18px;border-top:1px solid var(--line)}
 .out-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid #EDF0F2;cursor:pointer;background:#fff;width:100%;border-left:0;border-right:0;border-top:0;text-align:left}
 .out-row:hover{background:#FAFBFC}
@@ -324,7 +324,7 @@ const firebaseConfig = {
   appId: "1:1074657411273:web:874808b689ff4cb39ccd18"
 };
 const OWNER_EMAIL = "alonso.osunamaruri@gmail.com";
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -618,7 +618,8 @@ function renderInventory(v){
       <div><h1>Inventario</h1><p id="inv-summary"></p></div>
       <div class="head-actions">
         <button class="btn dark" id="inv-out" type="button">${ICONS.minus} Registrar salida</button>
-        <a class="btn primary" href="#/alta">${ICONS.plus} Dar de alta</a>
+        <button class="btn" id="inv-in" type="button">${ICONS.plus} Sumar a existente</button>
+        <a class="btn primary" href="#/alta">${ICONS.box} Dar de alta</a>
       </div>
     </div>
     <div class="chips" id="furn-chips"></div>
@@ -632,7 +633,8 @@ function renderInventory(v){
       </div>
     </div>
     <div id="inv-list"></div>`;
-  $('#inv-out').onclick = ()=>openOutFlow();
+  $('#inv-out').onclick = ()=>openMoveFlow('salida');
+  $('#inv-in').onclick = ()=>openMoveFlow('entrada');
   $('#inv-q').addEventListener('input', e=>{ S.ui.q=e.target.value; renderInventoryList(); });
   $('#inv-cat').addEventListener('change', e=>{ S.ui.cat=e.target.value; renderInventoryList(); });
   $('#inv-low').onclick = ()=>{ S.ui.low=!S.ui.low; $('#inv-low').classList.toggle('on', S.ui.low); renderInventoryList(); };
@@ -793,34 +795,39 @@ function openQuickMove(itemId, type){
     catch(e){ toast(errMsg(e), true); btn.disabled=false; }
   };
 }
-/* Registrar salida: buscar → elegir → cantidad. Se queda abierto para varias salidas seguidas. */
-function openOutFlow(){
+/* Registrar salida o sumar a un artículo existente: buscar → elegir → cantidad.
+   Se queda abierto para registrar varias cosas seguidas. */
+function openMoveFlow(type){
+  const OUT = type==='salida';
+  const T = OUT
+    ? {title:'Registrar salida', ph:'¿Qué sacaste? p. ej. pilas, foco, cinta', ask:'¿Cuántos sacaste?', notePh:'p. ej. control de la tele', noteLbl:'Para qué', btn:'Registrar salida', did:'Sacaste', toast:'Salida registrada'}
+    : {title:'Sumar a un artículo existente', ph:'¿Qué compraste o repusiste? p. ej. cinchos', ask:'¿Cuántos vas a sumar?', notePh:'p. ej. compra en Home Depot', noteLbl:'Nota', btn:'Sumar al inventario', did:'Sumaste', toast:'Se sumó'};
   const done = [];
   let picked = null;
   const m = openModal(`
-    <div class="modal-h"><h3>Registrar salida</h3><button class="x" data-close>×</button></div>
+    <div class="modal-h"><h3>${T.title}</h3><button class="x" data-close>×</button></div>
     <div class="modal-b" id="out-body"></div>
     <div class="modal-f"><button class="btn" data-close>Listo</button></div>`);
   const body = $('#out-body', m);
   const drawSearch = (q='')=>{
     picked = null; currentSubmit = null;
     body.innerHTML = `
-      <div class="search" style="margin-bottom:12px">${ICONS.search}<input class="input" id="out-q" placeholder="¿Qué sacaste? p. ej. pilas, foco, cinta" value="${esc(q)}" autocomplete="off"></div>
+      <div class="search" style="margin-bottom:12px">${ICONS.search}<input class="input" id="out-q" placeholder="${esc(T.ph)}" value="${esc(q)}" autocomplete="off"></div>
       <div class="out-list" id="out-list"></div>
-      ${done.length?`<ul class="out-done">${done.map(d=>`<li>✓ Sacaste ${d.qty} ${esc(d.unit)} de <b style="color:var(--ink)">${esc(d.name)}</b></li>`).join('')}</ul>`:''}`;
+      ${done.length?`<ul class="out-done">${done.map(d=>`<li>✓ ${T.did} ${d.qty} ${esc(d.unit)} de <b style="color:var(--ink)">${esc(d.name)}</b></li>`).join('')}</ul>`:''}`;
     const inp = $('#out-q', body);
     const drawList = ()=>{
       const nq = norm(inp.value);
       let items = S.items.slice();
       if(nq) items = items.filter(i=>norm([i.name,i.brand,i.spec,i.serial,catLabel(i.categoryId),locName(i.locationId)].join(' ')).includes(nq));
-      items.sort((a,b)=> (b.quantity>0)-(a.quantity>0) || a.name.localeCompare(b.name,'es'));
+      items.sort((a,b)=> (OUT ? (b.quantity>0)-(a.quantity>0) : 0) || a.name.localeCompare(b.name,'es'));
       $('#out-list', body).innerHTML = items.length ? items.slice(0,60).map(it=>`
-        <button type="button" class="out-row ${Number(it.quantity)>0?'':'zero'}" data-pick="${it.id}">
+        <button type="button" class="out-row ${(OUT && !(Number(it.quantity)>0))?'zero':''}" data-pick="${it.id}">
           <div class="thumb" style="width:42px;height:42px;font-size:19px;border-radius:8px">${thumbHtml(it)}</div>
           <div class="item-main"><div class="item-name" style="font-size:15px">${esc(it.name)}${it.brand?` <span style="font-weight:500;color:var(--muted)">· ${esc(it.brand)}</span>`:''}</div>
           <div class="item-meta">${esc(furnName(it.furnitureId))} › ${esc(locName(it.locationId))}</div></div>
           <div class="qty"><b class="num" style="font-size:18px">${Number(it.quantity)||0}</b><span>${esc(it.unit||'pza')}</span></div>
-        </button>`).join('') : `<p style="padding:18px;color:var(--muted);margin:0">No hay nada que coincida con "${esc(inp.value)}".</p>`;
+        </button>`).join('') : `<p style="padding:18px;color:var(--muted);margin:0">No hay nada que coincida con "${esc(inp.value)}".${OUT?'':' Si es algo nuevo, regístralo con <a href="#/alta" data-close>Dar de alta</a>.'}</p>`;
     };
     inp.addEventListener('input', drawList);
     drawList();
@@ -835,11 +842,11 @@ function openOutFlow(){
         <div class="thumb">${thumbHtml(it)}</div>
         <div class="item-main"><div class="item-name">${esc(it.name)}</div><div class="item-meta">${esc(furnName(it.furnitureId))} › ${esc(locName(it.locationId))} · hay <b class="num">${it.quantity}</b> ${esc(it.unit||'pza')}</div></div>
       </div>
-      <div class="field"><label>¿Cuántos sacaste?</label>${stepperHtml('out-qty')}</div>
-      <div class="field"><label>Para qué <small>(opcional)</small></label><input class="input" id="out-note" placeholder="p. ej. control de la tele"></div>
+      <div class="field"><label>${T.ask}</label>${stepperHtml('out-qty')}</div>
+      <div class="field"><label>${T.noteLbl} <small>(opcional)</small></label><input class="input" id="out-note" placeholder="${esc(T.notePh)}"></div>
       <div style="display:flex;gap:8px">
         <button class="btn" id="out-back" type="button">← Cambiar</button>
-        <button class="btn primary" id="out-ok" type="button" style="flex:1">Registrar salida</button>
+        <button class="btn primary" id="out-ok" type="button" style="flex:1">${T.btn}</button>
       </div>`;
     bindStepper(body, 'out-qty');
     setTimeout(()=>$('#out-qty',body)?.select(), 60);
@@ -848,9 +855,9 @@ function openOutFlow(){
       const btn=$('#out-ok',body); btn.disabled=true;
       const qty = Math.floor(Number($('#out-qty',body).value)||0);
       try{
-        await recordMovement(id, 'salida', qty, $('#out-note',body).value.trim());
+        await recordMovement(id, type, qty, $('#out-note',body).value.trim());
         done.unshift({name:it.name, qty, unit:it.unit||'pza'});
-        toast(`Salida registrada: ${qty} ${it.unit||'pza'} de ${it.name}`);
+        toast(`${T.toast}: ${qty} ${it.unit||'pza'} de ${it.name}`);
         drawSearch('');
       }catch(e){ toast(errMsg(e), true); btn.disabled=false; }
     };
@@ -1078,6 +1085,10 @@ function readItemFields(root){
     notes: g('f-notes').value.trim(),
   };
 }
+// Dentro de un mismo mueble no puede haber dos artículos con el mismo nombre.
+function sameNameInFurniture(p, exceptId){
+  return S.items.find(i=>i.id!==exceptId && i.furnitureId===p.furnitureId && norm(i.name)===norm(p.name));
+}
 function validateItem(p){
   if(!p.furnitureId) return 'Elige el mueble.';
   if(!p.locationId) return 'Elige en qué parte del mueble va (o crea una ubicación con +).';
@@ -1145,6 +1156,8 @@ function openItemEditor(itemId){
   $('#e-ok',m).onclick = async ()=>{
     const p = readItemFields(m);
     const err = validateItem(p); if(err){ toast(err,true); return; }
+    const twin = sameNameInFurniture(p, itemId);
+    if(twin){ toast(`Ya hay un "${twin.name}" en ${furnName(twin.furnitureId)} › ${locName(twin.locationId)}. Usa otro nombre o suma la cantidad a ese.`, true); return; }
     const btn=$('#e-ok',m); btn.disabled=true;
     try{
       const itemRef = doc(db,'items',itemId);
@@ -1258,7 +1271,7 @@ function updateDupes(){
   const box = $('#f-dupe'); if(!box) return;
   const d = findDupes($('#f-name')?.value, $('#f-brand')?.value);
   if(!d.length){ box.innerHTML=''; return; }
-  box.innerHTML = `<div class="dupe"><b>¿Ya está registrado?</b> Si es el mismo, mejor súmale la cantidad en vez de duplicarlo.
+  box.innerHTML = `<div class="dupe"><b>¿Ya está registrado?</b> Si es lo mismo, súmale la cantidad aquí en vez de darlo de alta otra vez.
     ${d.map(it=>`<div class="dupe-row">
       <div class="thumb" style="width:36px;height:36px;font-size:16px;border-radius:7px">${thumbHtml(it)}</div>
       <div class="item-main"><div class="item-name" style="font-size:14px">${esc(it.name)}${it.brand?` · ${esc(it.brand)}`:''}</div><div class="item-meta">${esc(furnName(it.furnitureId))} › ${esc(locName(it.locationId))} · hay ${it.quantity} ${esc(it.unit||'pza')}</div></div>
@@ -1270,15 +1283,16 @@ async function saveQuick(){
   const p = readItemFields(root);
   const err = validateItem(p); if(err){ toast(err, true); return; }
   const btn = $('#qa-save'); btn.disabled = true;
-  // coincidencia exacta en la misma ubicación → preguntar
-  const exact = S.items.find(i=>norm(i.name)===norm(p.name) && norm(i.brand)===norm(p.brand) && i.locationId===p.locationId && norm(i.spec)===norm(p.spec));
+  // Ya existe con ese nombre en este mueble → no se duplica; se ofrece sumarlo
+  const exact = sameNameInFurniture(p);
   if(exact){
-    const sum = await askConfirm('Ya existe en esa ubicación', `<b>${esc(exact.name)}</b> ya está registrado en ${esc(locName(exact.locationId))} con ${exact.quantity} ${esc(exact.unit||'pza')}. ¿Le sumo ${p.quantity} en vez de crear otro?`, {okLabel:`Sumar ${p.quantity}`});
+    const where = `${esc(furnName(exact.furnitureId))} › ${esc(locName(exact.locationId))}`;
+    const sum = await askConfirm('Ya existe en este mueble', `<b>${esc(exact.name)}</b> ya está registrado en ${where} con <b>${exact.quantity} ${esc(exact.unit||'pza')}</b>${isOut(exact)?' (agotado)':''}. Para no repetirlo, ¿le sumo ${p.quantity}?`, {okLabel:`Sumar ${p.quantity}`});
     if(sum){
-      try{ if(p.quantity>0) await recordMovement(exact.id, 'entrada', p.quantity, 'Desde alta rápida'); toast('Cantidad sumada'); resetQuickForm(); }
+      try{ if(p.quantity>0) await recordMovement(exact.id, 'entrada', p.quantity, 'Desde alta rápida'); toast(`Se sumaron ${p.quantity} a ${exact.name}`); resetQuickForm(); }
       catch(e){ toast(errMsg(e), true); }
-      btn.disabled=false; return;
     }
+    btn.disabled=false; return;
   }
   try{
     const ref = doc(collection(db,'items'));
