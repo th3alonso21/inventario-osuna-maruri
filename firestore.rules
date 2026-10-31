@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function isOwner() {
+      return signedIn() && request.auth.token.email.lower() == 'alonso.osunamaruri@gmail.com';
+    }
+    function isMember() {
+      return isOwner() || (
+        signedIn() &&
+        exists(/databases/$(database)/documents/config/access) &&
+        request.auth.token.email.lower() in get(/databases/$(database)/documents/config/access).data.emails
+      );
+    }
+    // Todos los de la casa tienen los mismos permisos.
+    match /{document=**} {
+      allow read, write: if isMember();
+    }
+  }
+}
